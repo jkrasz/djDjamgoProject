@@ -1,0 +1,61 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/customer_dashboard.css' %}">
+</head>
+<body>
+    <header>
+        <h1>{{ bar_info.name }}</h1>
+        <p>{{ bar_info.description }}</p>
+        <nav>
+            <ul>
+                <li><a href="{{ bar_info.social_media_link }}">Social Media</a></li>
+                <li><a href="mailto:{{ bar_info.contact_info }}">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section id="now-playing">
+        <h2>Now Playing</h2>
+        {% if current_playing %}
+            <p>Song: {{ current_playing.song_title }}</p>
+            <p>Artist: {{ current_playing.artist }}</p>
+            <p>Album: {{ current_playing.album }}</p>
+            <p>Performer: {{ current_playing.performer.name }}</p>
+            <p>Upcoming Songs: {{ current_playing.upcoming_songs }}</p>
+        {% else %}
+            <p>No music playing currently.</p>
+        {% endif %}
+    </section>
+    <section id="specials">
+        <h2>Bar Specials</h2>
+        <ul>
+            {% for special in specials %}
+                <li>{{ special.title }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    <section id="tip">
+        <h2>Tip a Performer</h2>
+        <form method="post" action="{% url 'djapp:tip_performer' %}">
+            {% csrf_token %}
+            <label for="performer">Select Performer:</label>
+            <select name="performer_id" id="performer">
+                {% for performer in performers %}
+                    <option value="{{ performer.id }}">{{ performer.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="amount">Tip Amount:</label>
+            <input type="number" name="amount" step="0.01" required>
+            <button type="submit">Tip</button>
+        </form>
+    </section>
+    <footer>
+        <p>© 2024 DJ Djamgo Club Management</p>
+    </footer>
+</body>
+</html>

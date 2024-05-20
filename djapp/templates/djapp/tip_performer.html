@@ -1,0 +1,80 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tip a Performer</title>
+</head>
+<body>
+    <h1>Tip a Performer</h1>
+    <form method="post" action="{% url 'djapp:tip_performer' %}">
+        {% csrf_token %}
+        <label for="performer">Select Performer:</label>
+        <select name="performer_id" id="performer">
+            {% for performer in performers %}
+                <option value="{{ performer.id }}">{{ performer.name }}</option>
+            {% endfor %}
+        </select>
+        <label for="amount">Tip Amount:</label>
+        <input type="number" name="amount" step="0.01" required>
+        <button type="submit">Tip</button>
+    </form>
+
+    <form id="payment-form">
+        <label for="card-element">Credit or debit card</label>
+        <div id="card-element"></div>
+        <button type="submit">Submit Payment</button>
+    </form>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var stripe = Stripe("{{ STRIPE_PUBLISHABLE_KEY }}");
+
+        var elements = stripe.elements();
+        var card = elements.create('card');
+        card.mount('#card-element');
+
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const {error, paymentMethod} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: card,
+            });
+
+            if (error) {
+                console.log('Payment method error:', error);
+            } else {
+                fetch("{% url 'djapp:create_payment_intent' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: JSON.stringify({
+                        amount: document.getElementById('amount').value * 100,
+                    }),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    stripe.confirmCardPayment(data.clientSecret, {
+                        payment_method: paymentMethod.id,
+                    }).then((result) => {
+                        if (result.error) {
+                            console.log('Payment error:', result.error);
+                        } else {
+                            console.log('Payment success!');
+                            form.submit();
+                        }
+                    });
+                });
+            }
+        });
+    });
+    </script>
+</body>
+</html>

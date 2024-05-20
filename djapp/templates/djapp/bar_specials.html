@@ -1,0 +1,18 @@
+{% extends 'djapp/base.html' %}
+
+{% block content %}
+<h1>Bar Specials</h1>
+{% if specials %}
+<ul>
+    {% for special in specials %}
+    <li>
+        <strong>{{ special.name }}</strong>: {{ special.description }}
+        <br>
+        Valid until: {{ special.valid_until|date:"F d, Y" }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No specials available at the moment.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,50 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performer Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/performer_dashboard.css' %}">
+</head>
+<body>
+    <header>
+        <img src="{{ performer.profile_picture_url }}" alt="Profile Picture">
+        <h1>{{ performer.name }}</h1>
+        <!-- Navigation Menu -->
+        <nav>
+            <ul>
+                <li><a href="{% url 'djapp:performer_dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'djapp:performer_schedule' %}">Schedule</a></li>
+                <li><a href="{% url 'djapp:music_library' %}">Music Library</a></li>
+                <li><a href="{% url 'djapp:performer_profile' %}">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section id="dashboard">
+        <h2>Upcoming Performance Schedule</h2>
+        <!-- Details about upcoming performances -->
+    </section>
+    <section id="profile">
+        <h2>Profile Information</h2>
+        <p>{{ performer.bio }}</p>
+        <p>Contact: {{ performer.contact_info }}</p>
+        <button>Edit Profile</button>
+    </section>
+    <section id="schedule">
+        <h2>Performance Calendar</h2>
+        <!-- Calendar view here -->
+        <button>Edit Schedule</button>
+    </section>
+    <section id="communication">
+        <h2>Inbox</h2>
+        <!-- List messages -->
+        <h2>Alerts</h2>
+        <!-- List alerts -->
+    </section>
+    <footer>
+        <p>© 2024 DJ Djamgo Club Management</p>
+    </footer>
+</body>
+</html>
